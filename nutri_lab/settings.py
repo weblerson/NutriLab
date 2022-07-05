@@ -148,4 +148,5 @@ MESSAGE_TAGS = {
 
 EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
 EMAIL_HOST_USER = config("EMAIL_HOST-USER", default = "", cast = str)
-PATH_TEMPLATE = os.path.join(BASE_DIR, 'authentication/templates/emails/confirm_auth.html')
+ACTIVATION_PATH_TEMPLATE = os.path.join(BASE_DIR, 'authentication/templates/emails/confirm_auth.html')
+RECOVER_PATH_TEMPLATE = os.path.join(BASE_DIR, 'authentication/templates/emails/recover_password.html')

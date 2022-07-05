@@ -32,8 +32,9 @@
                         <br>
                         <span class="bold">Senha</span>
                         <input class="form-control input-form" name="senha" type="password" placeholder="Digite sua senha...">
-                        <br>
-
+                        <a href="{% url 'recover_password_email' %}">Esqueceu sua senha?</a>
+                        <br><br>
+                        
                         {% if messages %}
                             {% for message in messages %}
                                 <div class="alert {{message.tags}}">

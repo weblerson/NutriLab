@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+
+{% block 'title' %}Recuperar Senha{% endblock %}
+{% block 'head' %}
+    <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-0evHe/X+R7YkIZDRvuzKMRqM+OrBnVFBL6DOitfPri4tjfHxaWutUpFmBp4vmVor" crossorigin="anonymous">
+    </head>
+{% endblock %}
+
+{% block 'body' %}
+    <section class="container">
+        <span class="container"><h3>Preencha os campos para realizar a alteração de senha.</h3></span><br>
+        <form action="{% url 'recover_password_email' %}" method="POST">{% csrf_token %}
+            <span class="bold">Nome de usuário</span>
+            <input class="form-control input-form" name="usuario" type="text" placeholder="Digite seu nome de usuário...">
+            <br>
+            <span class="bold">E-Mail</span>
+            <input class="form-control input-form" name="email" type="text" placeholder="Digite seu email...">
+            <br>
+            
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert {{message.tags}}">
+                        {{message}}
+                    </div>
+                {% endfor %}
+            {% endif %}
+
+            <button class="btn btn-primary">Logar</button>
+
+        </form>
+    </section>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/js/bootstrap.bundle.min.js" integrity="sha384-pprn3073KE6tl6bjs2QrFaJGz5/SUsLqktiwsUTF55Jfv3qYSDhgCecCxMW52nD2" crossorigin="anonymous"></script>
+{% endblock %}

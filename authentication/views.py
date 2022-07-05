@@ -1,10 +1,11 @@
+from django.http import HttpResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from .utils import Verify, Send
 from django.contrib.auth.models import User
 from django.contrib import messages, auth
 from django.contrib.messages import constants
 from django.conf import settings
-from .models import Ativacao
+from .models import Ativacao, Recuperacao
 from hashlib import sha256
 
 # Create your views here.
@@ -56,7 +57,7 @@ def register(request):
                 activation.save()
 
                 Send.email(
-                    settings.PATH_TEMPLATE, "Cadastro confirmado",
+                    settings.ACTIVATION_PATH_TEMPLATE, "Cadastro confirmado",
                     [email],
                     username = username,
                     link_ativacao = f"127.0.0.1:8000/auth/activate/{token}")
@@ -91,9 +92,8 @@ def login(request):
                 return redirect('/')
 
 def logout(request):
-    if request.user.is_authenticated:
-        auth.logout(request)
-        return redirect('/auth/login')
+    auth.logout(request)
+    return redirect('/auth/login')
 
 def activate_account(request, token):
     token = get_object_or_404(Ativacao, token = token)
@@ -109,4 +109,111 @@ def activate_account(request, token):
     token.save()
 
     messages.add_message(request, constants.SUCCESS, "Conta ativada com sucesso!")
+    return redirect('/auth/login')
+
+def recover_password_email(request):
+    match request.method:
+        case "GET":
+            if request.user.is_authenticated:
+                return redirect('/')
+
+            return render(request, 'recover_menu.html')
+
+        case "POST":
+            username = request.POST.get("usuario")
+            email = request.POST.get("email")
+
+            _user = User.objects.filter(username = username, email = email)
+            if _user:
+                user = User.objects.get(username = username)
+                _token = Recuperacao.objects.filter(user = user)
+                token = sha256(f"{username}{email}".encode()).hexdigest()
+
+                if not _token:
+                    user_token = Recuperacao(
+                        token = token,
+                        user = user
+                    )
+
+                    user_token.save()
+
+                    Send.email(
+                        settings.RECOVER_PATH_TEMPLATE,
+                        "Alterar Senha",
+                        [email],
+                        username = username,
+                        link_recuperacao = f"127.0.0.1:8000/auth/recover/{token}",
+                        link_seguranca = f"127.0.0.1:8000/auth/norecover/{token}"
+                    )
+
+                    messages.add_message(request, constants.SUCCESS, f"E-mail de recuperação enviado com sucesso para {email}")
+
+                    return redirect('/auth/login')
+                
+                else:
+                    user_token = Recuperacao.objects.get(user = user)
+                    user_token.token = token
+                    user_token.ativo = True
+
+                    user_token.save()
+
+                    Send.email(
+                        settings.RECOVER_PATH_TEMPLATE,
+                        "Alterar Senha",
+                        [email],
+                        username = username,
+                        link_recuperacao = f"127.0.0.1:8000/auth/recover/{token}",
+                        link_seguranca = f"127.0.0.1:8000/auth/norecover/{token}"
+                    )
+
+                    messages.add_message(request, constants.SUCCESS, f"E-mail de recuperação enviado com sucesso para {email}")
+
+                    return redirect('/auth/login')
+
+            if not _user:
+                messages.add_message(request, constants.ERROR, "Esse usuário não existe!")
+                return redirect('/auth/recover')
+
+def recover_password(request, token):
+    match request.method:
+        case "GET":
+            _token = get_object_or_404(Recuperacao, token = token)
+            if not _token.ativo:
+                return redirect('/auth/login')
+
+            return render(request, 'recover_password.html', {"token": token})
+
+        case "POST":
+            _token = get_object_or_404(Recuperacao, token = token)
+            new_password = request.POST.get('nova_senha')
+            confirm_password = request.POST.get('confirmar_senha')
+
+            if not _token.ativo:
+                messages.add_message(request, constants.WARNING, "Não houve nenhuma solicitação de recuperação de senha.")
+                return redirect('/auth/login')
+
+            if new_password != confirm_password:
+                messages.add_message(request, constants.WARNING, "As senhas não coincidem.")
+                return redirect(f'/auth/recover/{token}')
+
+            else:
+                user = User.objects.get(username = _token.user.username)
+                user.set_password(new_password)
+                user.save()
+
+                _token.ativo = False
+                _token.save()
+
+                messages.add_message(request, constants.SUCCESS, "Senha alterada com sucesso!")
+                return redirect('/auth/login')
+
+def norecover_password(request, token):
+    _token = get_object_or_404(Recuperacao, token = token)
+    if not _token.ativo:
+        return redirect('/auth/login')
+
+    _token.ativo = False
+    _token.save()
+
+    messages.add_message(request, constants.WARNING, "Pedido de alteração de senha recusado com sucesso!")
     return redirect('/auth/login')

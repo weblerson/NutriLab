@@ -10,3 +10,11 @@ class Ativacao(models.Model):
 
     def __str__(self):
         return self.user.username
+
+class Recuperacao(models.Model):
+    token = models.CharField(max_length = 64)
+    user = models.ForeignKey(User, on_delete = models.DO_NOTHING)
+    ativo = models.BooleanField(default = False)
+
+    def __str__(self):
+        return self.user.username
