@@ -147,5 +147,5 @@ MESSAGE_TAGS = {
 # E-mail
 
 EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
-EMAIL_HOST_USER = config("EMAIL_HOST-USER", default = "")
+EMAIL_HOST_USER = config("EMAIL_HOST-USER", default = "", cast = str)
 PATH_TEMPLATE = os.path.join(BASE_DIR, 'authentication/templates/emails/confirm_auth.html')
