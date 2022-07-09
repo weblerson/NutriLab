@@ -13,7 +13,7 @@ def register(request):
     match request.method:
         case "GET":
             if request.user.is_authenticated:
-                return redirect('/')
+                return redirect('/pacientes')
 
             return render(request, 'register.html')
 
@@ -73,7 +73,7 @@ def login(request):
     match request.method:
         case "GET":
             if request.user.is_authenticated:
-                return redirect('/')
+                return redirect('/pacientes')
 
             return render(request, 'login.html')
 
@@ -89,7 +89,7 @@ def login(request):
 
             else:
                 auth.login(request, user)
-                return redirect('/')
+                return redirect('/pacientes')
 
 def logout(request):
     auth.logout(request)
@@ -115,7 +115,7 @@ def recover_password_email(request):
     match request.method:
         case "GET":
             if request.user.is_authenticated:
-                return redirect('/')
+                return redirect('/pacientes')
 
             return render(request, 'recover_menu.html')
 
