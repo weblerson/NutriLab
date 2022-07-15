@@ -40,13 +40,13 @@
         + Nova refeição
     </button>
 
-    <button type="button" class="btn btn-outline-primary">
+    <button onclick="return sendMarkup()" id="export" name="{{paciente.nome}}" type="button" class="btn btn-outline-primary">
         Exportar refeição
     </button>
     <br>
     <br>
 
-    <div class="fundo-alimentar">
+    <div id="plano-alimentar" class="fundo-alimentar">
         {% for refeicao in refeicoes %}
             <div class="refeicao">
                 <div class="head-refeicao">
@@ -208,6 +208,5 @@
             opcao.style.display = "Block";
         }
     </script>
-
 
 {% endblock%}

@@ -244,3 +244,20 @@ def opcao(request, id):
             except:
                 messages.add_message(request, constants.SUCCESS, f"Erro interno do sistema. Não foi possível cadastrar a opção.")
                 return redirect(f'/pacientes/plano_alimentar/{id}')
+
+# @login_required(login_url='/auth/login')
+# def markup_plano(request, id):
+#     paciente = get_object_or_404(Paciente, id=id)
+
+#     match request.method:
+#         case "POST":
+#             try:
+#                 refeicoes = Refeicao.objects.filter(paciente=paciente)
+#                 opcoes = Opcao.objects.all()
+
+#                 return render(request, 'plano_alimentar_pdf.html', {"paciente": paciente,
+#                                                                     "refeicoes": refeicoes,
+#                                                                     "opcoes": opcoes})
+
+#             except:
+#                 raise Http404()
