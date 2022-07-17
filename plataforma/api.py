@@ -11,6 +11,7 @@ class ContentSchema(Schema):
 
 @api.post('/api/plano_alimentar')
 def gerar_pdf(request, content: ContentSchema):
+    # response['Content-Disposition'] = 'attachment; filename= "' + content.name + '"'
     bootstrap_css = os.path.join(settings.BASE_DIR, 'templates/static/plataforma/css/bootstrap.css')
     plano_alimentar = os.path.join(settings.BASE_DIR, 'templates/static/plataforma/css/plano_alimentar.css')
     style = os.path.join(settings.BASE_DIR, 'templates/static/plataforma/css/style.css')
