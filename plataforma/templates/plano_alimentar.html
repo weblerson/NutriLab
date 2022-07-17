@@ -61,7 +61,9 @@
                             <div class="opcao">
                                 <div class="row">
                                     <div class="col-md-2">
-                                        <img width="100%" src="{{opcao.imagem.url}}">
+                                        {% if opcao.image %}
+                                            <img width="100%" src="{{opcao.imagem.url}}">
+                                        {% endif %}
                                     </div>
 
                                     <div class="col-md-10">
